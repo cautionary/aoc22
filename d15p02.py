@@ -1,44 +1,86 @@
 import re
 
-input = open('d15s01.txt', 'r')
+input = open('d15i01.txt', 'r')
 lines = input.read()
 
-MIN = 0
-MAX = 20 #4000000
+MAX = 4000000
+coverage = []
 
-coverage = set()
+for r in range(MAX):
+    if r % 10000 == 0:
+        print(r)
+    coverage.append([])
+    for line in lines.strip().split("\n"):
+        matches = re.match("Sensor at x=(\d+), y=(\d+): closest beacon is at x=(-?\d+), y=(\d+)", line)
+        sensor, beacon = complex(int(matches[1]), int(matches[2])), complex(int(matches[3]), int(matches[4]))
+    
+        distance = sensor - beacon
+        mdist = int(abs(distance.real) + abs(distance.imag))
+    
+        dist_to_target = int(abs(sensor.imag - r))
 
-c = 0
-for line in lines.strip().split("\n"):
-    print(c)
-    c += 1
-    matches = re.match("Sensor at x=(\d+), y=(\d+): closest beacon is at x=(-?\d+), y=(\d+)", line)
-    sensor, beacon = complex(int(matches[1]), int(matches[2])), complex(int(matches[3]), int(matches[4]))
-    coverage.add(sensor)
-    coverage.add(beacon)
+        width_at_target = max(0, (mdist * 2 + 1) - (2 * dist_to_target))
 
-    distance = sensor - beacon
-    mdist = int(abs(distance.real) + abs(distance.imag))
+        if width_at_target > 0:
+            target_range = (max(0, int(sensor.real) - width_at_target // 2), min(MAX, int(sensor.real) + width_at_target // 2))
 
-    for i in range(mdist + 1):
-        q1 = sensor + complex(i, mdist - i)
-        q2 = sensor + complex(i, -(mdist - i))
-        q3 = sensor + complex(-i, mdist - i)
-        q4 = sensor + complex(-i, -(mdist - i))
+            coverage[r].append(target_range)
 
-        #print((sensor, mdist, i, k, q1, q2, q3, q4))
+    combined_ranges = coverage[r]
+    old_cr = []
+    while old_cr != combined_ranges:
+        old_cr = combined_ranges.copy()
+        pair = combined_ranges[0]
+        found_pair = False
+        if len(combined_ranges) > 1:
+            while not found_pair:
+                 for other_pair in combined_ranges[1:]:
+                     if not found_pair:
+                         if (pair[0] <= other_pair[1] and pair[1] >= other_pair[0]) \
+                           or (pair[1] >= other_pair[0] and pair[0] <= other_pair[1]):
+  
+                             new_pair = (min(pair[0], other_pair[0]), max(pair[1], other_pair[1]))
+                             combined_ranges.remove(pair)
+                             combined_ranges.remove(other_pair)
+                             combined_ranges.append(new_pair)
+                             found_pair = True
+                 if not found_pair:
+                     print((r, combined_ranges))
+                     for cr in combined_ranges:
+                         if cr[0] == 0:
+                             y = r
+                             x = cr[1] + 1
+                             print(x * 4000000 + y)
+                     exit() 
 
-        if q1.real >= MIN and q1.real <= MAX and q1.imag >= MIN and q1.imag <+ MAX:
-            coverage.add(q1)
-        if q2.real >= MIN and q2.real <= MAX and q2.imag >= MIN and q2.imag <+ MAX:
-            coverage.add(q2)
-        if q3.real >= MIN and q3.real <= MAX and q3.imag >= MIN and q3.imag <+ MAX:
-            coverage.add(q3)
-        if q4.real >= MIN and q4.real <= MAX and q4.imag >= MIN and q4.imag <+ MAX:
-            coverage.add(q4)
+for r in range(MAX):
+    if r % 10000 == 0:
+        print(r)
+    combined_ranges = coverage[r]
+    old_cr = []
+    while old_cr != combined_ranges:
+        old_cr = combined_ranges.copy()
+        pair = combined_ranges[0]
+        found_pair = False
+        if len(combined_ranges) > 1:
+            while not found_pair:
+                 for other_pair in combined_ranges[1:]:
+                     if not found_pair:
+                         if (pair[0] <= other_pair[1] and pair[1] >= other_pair[0]) \
+                           or (pair[1] >= other_pair[0] and pair[0] <= other_pair[1]):
+  
+                             new_pair = (min(pair[0], other_pair[0]), max(pair[1], other_pair[1]))
+                             combined_ranges.remove(pair)
+                             combined_ranges.remove(other_pair)
+                             combined_ranges.append(new_pair)
+                             found_pair = True
+                 if not found_pair:
+                     print((r, combined_ranges))
+                     for cr in combined_ranges:
+                         if cr[0] == 0:
+                             y = r
+                             x = cr[1] + 1
+                             print(x * 4000000 + y)
+                     exit() 
 
 
-for i in range(MAX):
-    for j in range(MAX):
-        if complex(i,j) not in coverage:
-            print((i,j))
