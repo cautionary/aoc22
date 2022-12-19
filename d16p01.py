@@ -1,4 +1,5 @@
 import re
+from itertools import permutations
 
 f =  open('d16i01.txt','r')
 lines = f.readlines()
@@ -8,26 +9,37 @@ def paths_to_valves(valves, cur, rem_min):
     possible_targets = []
     for valve in valves:
         if valves[valve]["flow"] > 0 and valves[valve]["state"] == 0:
-            path_to_target = shortest_path(valves, cur, valve)
-            value = valves[valve]["flow"] * (rem_min - len(path_to_target))
-            #print((valve, valves[valve]["flow"], rem_min, len(path_to_target), value))
-            possible_targets.append((valve, value, path_to_target))
-    target = None
+            possible_targets.append((valve, valves[valve]["flow"]))
+
     possible_targets = sorted(possible_targets, key = lambda x: x[1], reverse=True)
 
+    if len(possible_targets) > 0:
+        highest_value = 0
+        winning_opt = None
+        opts = list(permutations(range(min(4, len(possible_targets)))))
+        for o in opts:
+            pts = []
+            for p in range(len(o)):
+                pts.append(possible_targets[o[p]][0])
+            paths = [shortest_path(valves, cur, pts[0])]
+            for p in range(len(o)-1):
+                paths.append(shortest_path(valves, pts[p], pts[p+1]))
+            values = []
+            for p in range(len(o)):
+                rm = rem_min
+                for v in range(p+1):
+                    rm = rm - len(paths[v])
+                values.append(max(0, rm * possible_targets[o[p]][1]))
+            value = sum(values)
 
+            if value > highest_value:
+                    highest_value = value
+                    winning_opt = o
+        #print((winning_opt, possible_targets))
 
-    for opt in [(0,1,2), (0,2,1), (1,0,2), 
-
-
-    #for t in possible_targets:
-    #    if target is None:
-    #        target = t
-    #    elif t[1] >= target[1] and len(t[2]) < len(target[2]):
-    #        target = t
-    #return target
-
-
+        return (possible_targets[winning_opt[0]][0], possible_targets[winning_opt[0]][1], shortest_path(valves, cur, possible_targets[winning_opt[0]][0]))
+    else:
+        return (cur, 0, [cur])
 
 def shortest_path(valves, start, target):
     unvisited = []
@@ -80,8 +92,8 @@ current_valve = "AA"
 flows = []
 pressure = 0
 
-for minute in range(1, 30):
-    #print((minute, current_valve, flows))
+for minute in range(30):
+    print((minute, current_valve, flows))
 
     for flow in flows:
         pressure = pressure + flow
@@ -90,8 +102,8 @@ for minute in range(1, 30):
     #print(next_valve)
     if next_valve and next_valve[0] != current_valve:
         current_valve = next_valve[2][0]
-    else:
+    elif valves[current_valve]["state"] == 0:
         valves[current_valve]["state"] = 1
         flows.append(valves[current_valve]["flow"])
 
-print(pressure)
+    print(pressure)
