@@ -3,7 +3,7 @@ lines = f.read()
 
 jets = lines.strip()
 
-jets = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+#jets = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
 
 TWIDTH = 7
 RSTARTX = 2
@@ -44,7 +44,14 @@ def collision(tspots, rock, rpos, direc):
     return False
     
 j = 0
-for i in range(2022):
+last_max = 0
+cycle = 1705
+for i in range(2000):
+    if i == 1585:
+        print(tunnel_max - last_max)
+    if i % cycle == 0:
+        print(tunnel_max - last_max)
+        last_max = tunnel_max
     rock = rocks[rtype[i % 5]]
     rheight = len(rock)
     rwidth = len(rock[0])
