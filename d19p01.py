@@ -14,7 +14,7 @@ for line in lines:
     blueprints.append(bp)
 
 results = {}
-for bp in blueprints:
+for bp in blueprints[1:]:
     inventory = {'orebot': 1,
                  'claybot': 0,
                  'obsidianbot': 0,
@@ -25,27 +25,47 @@ for bp in blueprints:
                  'geode': 0}
     work_queue = []
     for min in range(24):
-        print(min, inventory)
+        print(min)
+        print(bp)
+        print(inventory)
 
-        if inventory['obsidian'] >= bp['geodebot']['obsidian'] \
-          and inventory['ore'] >= bp['geodebot']['ore']:
-            work_queue.append('geodebot')
-            inventory['ore'] -= bp['geodebot']['ore']
-            inventory['obsidian'] -= bp['geodebot']['obsidian']
-        elif inventory['obsidianbot'] < 2 \
-          and inventory['ore'] >= bp['obsidianbot']['ore'] \
-          and inventory['clay'] >= bp['obsidianbot']['clay']:
+#        if inventory['obsidian'] >= bp['geodebot']['obsidian'] \
+#          and inventory['ore'] >= bp['geodebot']['ore']:
+#            work_queue.append('geodebot')
+#            inventory['ore'] -= bp['geodebot']['ore']
+#            inventory['obsidian'] -= bp['geodebot']['obsidian']
+#        elif inventory['obsidianbot'] < 2 \
+#          and inventory['ore'] >= bp['obsidianbot']['ore'] \
+#          and inventory['clay'] >= bp['obsidianbot']['clay']:
+#            work_queue.append('obsidianbot')
+#            inventory['ore'] -= bp['obsidianbot']['ore']
+#            inventory['clay'] -= bp['obsidianbot']['clay']
+#        elif (inventory['claybot'] < 3 \
+#          or inventory['obsidianbot'] == 1 \
+#          and inventory['claybot'] < 4) \
+#          and inventory['ore'] >= bp['claybot']['ore']:
+#            work_queue.append('claybot')
+#            inventory['ore'] -= bp['claybot']['ore']
+#        elif inventory['orebot'] < 1 \
+#          and inventory['ore'] >= bp['orebot']['ore']:
+#            work_queue.append('orebot')
+#            inventory['ore'] -= bp['orebot']['ore']
+#
+        inp = input()
+        if inp == "1":
+            work_queue.append('orebot')
+            inventory['ore'] -= bp['orebot']['ore']
+        elif inp == "2":
+            work_queue.append('claybot')
+            inventory['ore'] -= bp['claybot']['ore']
+        elif inp == "3":
             work_queue.append('obsidianbot')
             inventory['ore'] -= bp['obsidianbot']['ore']
             inventory['clay'] -= bp['obsidianbot']['clay']
-        elif inventory['claybot'] < 4 \
-          and inventory['ore'] >= bp['claybot']['ore']:
-            work_queue.append('claybot')
-            inventory['ore'] -= bp['claybot']['ore']
-        elif inventory['orebot'] < 1 \
-          and inventory['ore'] >= bp['orebot']['ore']:
-            work_queue.append('orebot')
-            inventory['ore'] -= bp['orebot']['ore']
+        elif inp == "4":
+            work_queue.append('geodebot')
+            inventory['ore'] -= bp['geodebot']['ore']
+            inventory['obsidian'] -= bp['geodebot']['obsidian']
 
         inventory['ore'] += inventory['orebot']
         inventory['clay'] += inventory['claybot']
