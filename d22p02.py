@@ -55,13 +55,61 @@ for instr in instructions:
             next_pos = pos + move_ops[facing]
             if next_pos not in walls and next_pos not in tiles:
                 if facing == 0:
-                    next_pos = complex(rows[pos.imag][0], pos.imag)
+                    if pos.imag < 51: #f
+                        next_pos = complex(100, 151 - pos.imag)
+                        if next_pos in tiles:
+                            facing = 2
+                    elif pos.imag < 101: #g
+                        next_pos = complex(pos.imag + 50, 50)
+                        if next_pos in tiles:
+                            facing = 3
+                    elif pos.imag < 151: #f
+                        next_pos = complex(150, 151 - pos.imag)
+                        if next_pos in tiles:
+                            facing = 2
+                    else: #k
+                        next_pos = complex(pos.imag - 100, 150)
+                        if next_pos in tiles:
+                            facing = 3
                 elif facing == 1:
-                    next_pos = complex(pos.real, cols[pos.real][0])
+                    if pos.real < 50: #e
+                        next_pos = complex(pos.real + 100, 1)
+                    elif pos.real < 101: #k
+                        next_pos = complex(50, pos.real + 100)
+                        if next_pos in tiles:
+                            facing = 2
+                    else: #g
+                        next_pos = complex(100, pos.real - 50)
+                        if next_pos in tiles:
+                            facing = 2
                 elif facing == 2:
-                    next_pos = complex(rows[pos.imag][1], pos.imag)
+                    if pos.imag < 51: #b
+                        next_pos = complex(1, 151 - pos.imag)
+                        if next_pos in tiles:
+                            facing = 0
+                    elif pos.imag < 101: #h
+                        next_pos = complex(pos.imag - 50 , 101)
+                        if next_pos in tiles:
+                            facing = 1
+                    elif pos.imag < 151: #b
+                        next_pos = complex(51, 151 - pos.imag)
+                        if next_pos in tiles:
+                            facing = 0
+                    else: #a
+                        next_pos = complex(pos.imag - 100 , 1)
+                        if next_pos in tiles:
+                            facing = 1
                 elif facing == 3:
-                    next_pos = complex(pos.real, cols[pos.real][1])
+                    if pos.real < 51: #h
+                        next_pos = complex(51, pos.real + 50)
+                        if next_pos in tiles:
+                            facing = 0
+                    elif pos.real < 101: #a
+                        next_pos = complex(1, pos.real + 100)
+                        if next_pos in tiles:
+                            facing = 0
+                    else: #e
+                        next_pos = complex(pos.real - 100 , 200)
             if next_pos in tiles:
                 pos = next_pos
     elif instr == 'R':
@@ -71,4 +119,3 @@ for instr in instructions:
 
 answer = int(pos.imag * 1000 + pos.real * 4 + facing)
 print(answer)
-
