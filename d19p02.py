@@ -19,7 +19,6 @@ invmap = ['ore', 'clay', 'obsidian', 'geode', 'orebot', 'claybot', 'obsidianbot'
 
 @lru_cache(maxsize=None)
 def get_results(minutes, bpid, inventory):
-    #print(minutes, bpid, inventory)
     global blueprints
     bp = blueprints[bpid]
 
@@ -61,10 +60,10 @@ def get_results(minutes, bpid, inventory):
     for i in range(4, 8):
         inventory[i-4] += inventory[i]
 
-    if inventory[0] > 20:
-        inventory[0] = 20
-    if inventory[1] > 30:
-        inventory[1] = 30
+    if inventory[0] > 25:
+        inventory[0] = 25
+    if inventory[1] > 35:
+        inventory[1] = 35
     
     newgbot = 0
     for pbuy in possible_buys:
@@ -84,14 +83,10 @@ def get_results(minutes, bpid, inventory):
 
     return result
 
-total = 0
-for i in range(len(blueprints)):
-    res = get_results(24, i, (0,0,0,0,1,0,0,0))
-    print(blueprints[i]['id'], res, blueprints[i]['id'] * res)
-    total += res * blueprints[i]['id']
+prod = 1
 
-print(total)
-        
-#1461 too low
-#1467 too low
-#1545 too high
+for i in range(3):
+    res = get_results(32, i, (0,0,0,0,1,0,0,0))
+    prod = prod * res
+
+print(prod)
